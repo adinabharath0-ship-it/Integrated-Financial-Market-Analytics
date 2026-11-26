@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integrated Financial Market Analytics</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <script src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <h2>FinAnalytics</h2>
+
+    <a href="/">Dashboard</a>
+    <a href="/indian">Indian Market</a>
+    <a href="#forex">Forex Market</a>
+    <a href="#gold">Gold Market</a>
+    <a href="#analytics">Analytics</a>
+    <a href="#chart">Charts</a>
+    <a href="#about">About Project</a>
+
+</div>
+
+<div class="main">
+
+    <header>
+        <h1>Financial Market Dashboard</h1>
+        <p>Integrated Indian Stock Market | Forex | Gold Analytics</p>
+    </header>
+
+    <section class="welcome">
+        <h2>Welcome to Financial Analytics</h2>
+        <p>
+            Analyze financial markets using historical data,
+            technical indicators and risk management tools.
+        </p>
+    </section>
+
+    <h2>Market Categories</h2>
+
+    <div class="cards">
+
+        <a href="/indian" class="card" id="indian"
+           style="text-decoration:none;color:white;">
+            <h3>Indian Stock Market</h3>
+            <p>NIFTY 50</p>
+            <p>BANK NIFTY</p>
+            <p>Top 10 Indian Stocks</p>
+            <p>Click to Explore →</p>
+        </a>
+
+        <div class="card" id="forex">
+            <h3>Forex Market</h3>
+            <p>EURUSD</p>
+            <p>GBPUSD</p>
+            <p>USDJPY</p>
+            <p>USDINR | AUDUSD</p>
+        </div>
+
+        <div class="card" id="gold">
+            <h3>Gold Market</h3>
+            <p>XAUUSD</p>
+            <p>Gold Historical Analysis</p>
+            <p>Price Trend Analysis</p>
+        </div>
+
+    </div>
+
+    <section id="analytics">
+
+        <h2>Market Analytics</h2>
+        <p>Latest available historical data</p>
+
+        <div class="cards">
+
+            {% for market in market_data %}
+
+            <div class="card market-card">
+
+                <h3>{{ market.name }}</h3>
+                <p>Latest Closing Price</p>
+                <h2>{{ market.price }}</h2>
+                <p>RSI (14): {{ market.rsi }}</p>
+                <p>SMA 20: {{ market.sma20 }}</p>
+                <p>Date: {{ market.date }}</p>
+
+            </div>
+
+            {% else %}
+
+            <div class="card">
+                <h3>No Market Data Available</h3>
+                <p>Please download and process CSV files first.</p>
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+    <section class="welcome" id="chart">
+
+        <h2>Interactive NIFTY 50 Chart</h2>
+
+        {% if chart_json %}
+
+        <div id="marketChart" style="width:100%;height:450px;"></div>
+
+        <script>
+            const chartData = {{ chart_json | safe }};
+
+            Plotly.newPlot(
+                "marketChart",
+                chartData.data,
+                chartData.layout,
+                {responsive: true}
+            );
+        </script>
+
+        {% else %}
+
+        <p>NIFTY 50 chart data not found.</p>
+
+        {% endif %}
+
+    </section>
+
+    <section class="welcome">
+
+        <h2>Technical Analysis</h2>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>Moving Averages</h3>
+                <p>SMA 20</p>
+                <p>SMA 50</p>
+                <p>SMA 200</p>
+            </div>
+
+            <div class="card">
+                <h3>Momentum Indicators</h3>
+                <p>RSI (14)</p>
+                <p>MACD</p>
+                <p>MACD Signal</p>
+            </div>
+
+            <div class="card">
+                <h3>Risk Analysis</h3>
+                <p>Daily Returns</p>
+                <p>Volatility</p>
+                <p>Maximum Drawdown</p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="welcome" id="about">
+
+        <h2>About Our Project</h2>
+        <p>Integrated Financial Market Analytics and Visualization</p>
+        <p>Technologies: Python, Flask, Pandas, NumPy, Plotly, HTML and CSS</p>
+        <p>Data Sources: Yahoo Finance and MetaTrader 5</p>
+
+    </section>
+
+    <footer>
+        <p>Integrated Financial Market Analytics</p>
+        <p>Financial Market Research and Analysis</p>
+    </footer>
+
+</div>
+
+</body>
+</html>

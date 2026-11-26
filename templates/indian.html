@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Indian Stock Market Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <script src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>
+
+    <style>
+        .company-card {
+            display: block;
+            text-decoration: none;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .company-card:hover {
+            transform: translateY(-5px);
+            border: 1px solid #20bfff;
+        }
+
+        .company-card h3 {
+            color: #20bfff;
+        }
+
+        .view-link {
+            color: #20bfff;
+            font-weight: bold;
+        }
+
+        .chart-container {
+            width: 100%;
+            min-height: 500px;
+        }
+
+        .company-select {
+            padding: 12px;
+            width: 280px;
+            max-width: 100%;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<!-- Sidebar -->
+
+<div class="sidebar">
+
+    <h2>FinAnalytics</h2>
+
+    <a href="/">Main Dashboard</a>
+    <a href="/indian">Indian Market</a>
+
+</div>
+
+
+<!-- Main Dashboard -->
+
+<div class="main">
+
+    <header>
+
+        <h1>Indian Stock Market Dashboard</h1>
+
+        <p>NIFTY 50 | BANK NIFTY | Top Indian Companies</p>
+
+    </header>
+
+
+    <!-- Welcome -->
+
+    <section class="welcome">
+
+        <h2>Indian Market Analytics</h2>
+
+        <p>
+            Analyze Indian companies using historical prices,
+            technical indicators and interactive charts.
+        </p>
+
+    </section>
+
+
+    <!-- Company Cards -->
+
+    <h2>Indian Market Companies</h2>
+
+    <p>Click any company card to view its historical chart.</p>
+
+    <div class="cards">
+
+        {% for market in market_data %}
+
+        <a
+            href="{{ url_for('indian_market', symbol=market.name) }}#companyChart"
+            class="card company-card"
+        >
+
+            <h3>{{ companies.get(market.name, market.name) }}</h3>
+
+            <p>Latest Closing Price</p>
+
+            <h2>{{ market.price }}</h2>
+
+            <p>
+                <strong>RSI (14):</strong>
+                {{ market.rsi }}
+            </p>
+
+            <p>
+                <strong>SMA 20:</strong>
+                {{ market.sma20 }}
+            </p>
+
+            <p>
+                <strong>Date:</strong>
+                {{ market.date }}
+            </p>
+
+            <p class="view-link">
+                View Historical Chart →
+            </p>
+
+        </a>
+
+        {% else %}
+
+        <div class="card">
+            <h3>No Market Data Available</h3>
+            <p>Please check your processed CSV files.</p>
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- Company Selection -->
+
+    <section class="welcome" id="companyChart">
+
+        <h2>Company Historical Price Chart</h2>
+
+        <p>
+            Select a company from the dropdown or click a company card.
+        </p>
+
+        <form method="GET" action="/indian">
+
+            <label for="symbol">
+                Select Company:
+            </label>
+
+            <br>
+
+            <select
+                name="symbol"
+                id="symbol"
+                class="company-select"
+                onchange="this.form.submit()"
+            >
+
+                {% for symbol, name in companies.items() %}
+
+                <option
+                    value="{{ symbol }}"
+                    {% if selected == symbol %}selected{% endif %}
+                >
+                    {{ name }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </form>
+
+
+        <!-- Selected Company Chart -->
+
+        <h3>
+            {{ companies.get(selected, selected) }} Historical Analysis
+        </h3>
+
+        {% if chart_json %}
+
+        <div
+            id="companyChartDisplay"
+            class="chart-container"
+        ></div>
+
+        <script>
+
+            const chartData = {{ chart_json | safe }};
+
+            Plotly.newPlot(
+                "companyChartDisplay",
+                chartData.data,
+                chartData.layout,
+                {
+                    responsive: true,
+                    displaylogo: false
+                }
+            );
+
+        </script>
+
+        {% else %}
+
+        <div class="card">
+
+            <h3>Chart Data Not Available</h3>
+
+            <p>
+                Historical data file for this company was not found
+                or does not contain valid chart data.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- Back Button -->
+
+    <section class="welcome">
+
+        <a href="/">
+            ← Back to Main Dashboard
+        </a>
+
+    </section>
+
+
+    <!-- Footer -->
+
+    <footer>
+
+        <p>Integrated Financial Market Analytics</p>
+
+        <p>Indian Stock Market Research and Analysis</p>
+
+    </footer>
+
+</div>
+
+</body>
+
+</html>
